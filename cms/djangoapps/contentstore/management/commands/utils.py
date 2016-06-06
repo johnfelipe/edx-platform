@@ -30,10 +30,4 @@ def get_course_versions(course_key):
     course_locator = CourseKey.from_string(course_key)
     store = modulestore()._get_modulestore_for_courselike(course_locator)  # pylint: disable=protected-access
     index_entry = store.get_course_index(course_locator)
-    if index_entry is not None:
-        return {
-            'draft-branch': index_entry['versions']['draft-branch'],
-            'published-branch': index_entry['versions']['published-branch']
-        }
-
-    return None
+    return index_entry['versions'] if index_entry else None

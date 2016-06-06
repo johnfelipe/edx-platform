@@ -3,6 +3,7 @@
 <%namespace name='static' file='../static_content.html'/>
 <%!
 from django.utils.translation import ugettext as _
+from django.core.urlresolvers import reverse
 %>
 <%block name="title">${_('Maintenance Dashboard')}</%block>
 <%block name="viewcontent">
@@ -10,7 +11,7 @@ from django.utils.translation import ugettext as _
     <ul class="maintenance-list">
         % for view in views.values():
         <li class="view-list-container">
-            <a class="view-name" href='${view["url"]}'>${view['name']}</a>
+            <a class="view-name" href='${reverse(view["url"])}'>${view['name']}</a>
             <span class="view-desc">${view['description']}</span>
         </li>
         % endfor

@@ -4,32 +4,22 @@
 from django.utils.translation import ugettext as _
 from openedx.core.djangolib.markup import HTML, Text
 %>
-<div class="wrap-instructor-info studio-view maintenance-form">
-    <form class="form-create" method="post">
+<div id="force-published-form" class="wrap-instructor-info studio-view maintenance-form">
+    <form id="force_publish" class="form-create" method="post">
         <input type="hidden" name="csrfmiddlewaretoken" value="${csrf_token}"/>
         <div class="wrapper-form">
             <fieldset>
                 <legend class="sr">${_("Required data to force publish course.")}</legend>
                 <div class="list-input">
-                    <div class="field text required">
+                    <div id="course-id-container" class="field text required">
                         <label for="course-id">${_('Course ID')}</label>
-                        <input id="course-id" type="text" name="course-id" aria-describedby="course-id-desc" required
-                               value="${form_data['course_id']}"/>
+                        <input id="course-id" type="text" name="course-id" aria-describedby="course-id-desc" required />
                         <div id="course-id-desc" class="tip tip-stacked">${_('course-v1:edX+DemoX+Demo_Course')}</div>
-                        <div class="error" aria-live="polite" id="cid-error">
-                        % if error:
-                            ${msg}
-                        % endif
-                        </div>
+                        <div class="wrapper-error"></div>
                     </div>
                     <div class="field field-radio">
                         <div>
-                            % if form_data['is_dry_run']:
-                            <% is_checked = 'checked' %>
-                            % else:
-                            <% is_checked = '' %>
-                            % endif
-                            <input type="checkbox" id="dry-run" name="dry-run" aria-describedby="dry-run-desc" ${is_checked}/>
+                            <input type="checkbox" id="dry-run" name="dry-run" aria-describedby="dry-run-desc" checked/>
                             <label for="dry-run" class="label">
                             ${_('Dry Run')}
                             </label>
@@ -40,49 +30,13 @@ from openedx.core.djangolib.markup import HTML, Text
             </fieldset>
         </div>
         <div class="actions">
-            <button type="submit" class="action action-primary">${_('Force Publish Course')}
+            <button type="submit" id="submit_force_publish" class="action action-primary">${_('Force Publish Course')}
             </button>
-            <a href="${view['url']}" class="action action-secondary action-cancel"
-               aria-describedby="reset-values-desc">${_('Reset')}</a>
+            <button id="reset-button" class="action action-secondary action-cancel"
+               aria-describedby="reset-values-desc">${_('Reset')}</button>
             <span id="reset-values-desc" class="is-hidden">${_('Reset values')}</span>
         </div>
     </form>
-    % if current_versions:
-    <div class="result-container">
-        % if form_data['is_dry_run']:
-        <div class="result">
-            <div class="head-output">
-                ${_('You have done a dry run of force publishing the course. Nothing has changed. Had you run it, the following course versions would have been change.')}
-            </div>
-            <div class="main-output">
-                ${_('The published branch version, {published}, was reset to the draft branch version, {draft}.').format(
-                    published=current_versions['published-branch'],
-                    draft=current_versions['draft-branch']
-                )}
-            </div>
-        </div>
-        % elif updated_versions:
-        <div class="result">
-            <div class="head-output">
-            ${_('Forced published the course {course_id}.').format(
-                course_id=form_data['course_id']
-            )}
-            </div>
-            <div class="main-output">
-            ${_('The published branch version, {published}, was reset to the draft branch version, {draft}.').format(
-                published=current_versions['published-branch'],
-                draft=current_versions['draft-branch']
-            )}
-            </div>
-        </div>
-        % endif
-    </div>
-    % endif
-    <div class="wrapper-error">
-        <div class="error" aria-live="polite">
-        % if not current_versions and not error:
-            ${msg}
-        % endif
-        </div>
-    </div>
+    <div id="result-error"><div class="wrapper-error"></div></div>
+    <div id="result-container" class="result-container"></div>
 </div>

@@ -4,9 +4,8 @@ Views for the maintenance app.
 import logging
 from django.db import transaction
 from django.core.validators import ValidationError
-from django.core.urlresolvers import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.views.generic import View
 
 from edxmako.shortcuts import render_to_response
@@ -17,6 +16,7 @@ from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError
 
 from contentstore.management.commands.utils import get_course_versions
+from util.json_request import JsonResponse
 from util.views import require_global_staff
 
 
@@ -25,13 +25,13 @@ log = logging.getLogger(__name__)
 # This dict maintains all the views that will be used Maintenance app.
 MAINTENANCE_VIEWS = {
     'force_publish_course': {
-        'url': reverse_lazy('maintenance:force_publish_course'),
+        'url': 'maintenance:force_publish_course',
         'name': _('Force Publish Course'),
         'slug': 'force_publish_course',
-        'description': _('Sometimes the draft and published branches of a course can get out of sync.'
-                         'This command resets the published branch of a course to point to the draft branch,'
-                         'effectively force publishing the course.'
-                        ),
+        'description': _(
+            'Sometimes the draft and published branches of a course can get out of sync. This command resets the '
+            'published branch of a course to point to the draft branch, effectively force publishing the course.'
+        ),
     },
 }
 
@@ -77,6 +77,8 @@ class MaintenanceBaseView(View):
         """
         A short method to render_to_response that renders response.
         """
+        if self.request.is_ajax():
+            return JsonResponse(self.context)
         return render_to_response(self.template, self.context)
 
     @method_decorator(require_global_staff)
@@ -131,6 +133,12 @@ class ForcePublishCourseView(MaintenanceBaseView):
             }
         })
 
+    def get_course_branch_versions(self, versions):
+        return {
+            'draft-branch': unicode(versions['draft-branch']),
+            'published-branch': unicode(versions['published-branch'])
+        }
+
     @transaction.atomic
     @method_decorator(require_global_staff)
     def post(self, request):
@@ -180,7 +188,7 @@ class ForcePublishCourseView(MaintenanceBaseView):
             )
             return self.render_response()
 
-        current_versions = get_course_versions(course_id)
+        current_versions = self.get_course_branch_versions(get_course_versions(course_id))
 
         # if publish and draft are NOT different
         if current_versions['published-branch'] == current_versions['draft-branch']:
@@ -208,7 +216,7 @@ class ForcePublishCourseView(MaintenanceBaseView):
             course_usage_key, request.user, commit=True
         )
 
-        self.context['updated_versions'] = updated_versions
+        self.context['updated_versions'] = self.get_course_branch_versions(updated_versions)
         msg = 'Published branch version changed from {published_prev} to {published_new}.'.format(
             published_prev=current_versions['published-branch'],
             published_new=updated_versions['published-branch']
