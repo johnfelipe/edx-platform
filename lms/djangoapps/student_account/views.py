@@ -40,7 +40,12 @@ from openedx.core.djangoapps.theming.helpers import is_request_in_themed_site, g
 from openedx.core.djangoapps.user_api.accounts.api import request_password_change
 from openedx.core.djangoapps.user_api.errors import UserNotFound
 
+<<<<<<< 2c93adaeda7a7ba33b31bb32e267b734a4fcd9e7
 from openedx.core.djangoapps.user_api.models import UserPreference
+=======
+from pytz import common_timezones
+from lms.envs.common import FEATURES
+>>>>>>> Added a feature flag for the time zone field in account settings.
 
 AUDIT_LOG = logging.getLogger("audit")
 

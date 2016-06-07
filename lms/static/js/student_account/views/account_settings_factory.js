@@ -102,7 +102,7 @@
                             })
                         },
                         {
-                            view: new  AccountSettingsFieldViews.DropdownFieldView({
+                            view: new AccountSettingsFieldViews.DropdownFieldView({
                                 model: userPreferencesModel,
                                 required: true,
                                 title: gettext('Time Zone'),
@@ -160,6 +160,11 @@
                     ]
                 }
             ];
+
+            // removes time zone field if feature flag disabled
+            if (!fieldsData.time_zone.visible) {
+                aboutSectionsData[0].fields.splice(6, 1)
+            }
 
             accountsSectionData = [
                 {
