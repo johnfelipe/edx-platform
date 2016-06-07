@@ -14,7 +14,7 @@ from django.db.transaction import atomic, TransactionManagementError
 from django.test import TestCase, TransactionTestCase
 
 from util.db import (
-    commit_on_success, enable_outer_atomic, outer_atomic, generate_int_id, NoOpMigrationModules
+    commit_on_success, enable_named_outer_atomic, outer_atomic, generate_int_id, NoOpMigrationModules
 )
 
 
@@ -138,7 +138,7 @@ class TransactionManagersTestCase(TransactionTestCase):
     def test_named_outer_atomic_nesting(self):
         """
         Test that a named outer_atomic raises an error only if nested in
-        enable_outer_atomic and inside another atomic.
+        enable_named_outer_atomic and inside another atomic.
         """
         if connection.vendor != 'mysql':
             raise unittest.SkipTest('Only works on MySQL.')
@@ -148,7 +148,7 @@ class TransactionManagersTestCase(TransactionTestCase):
         with atomic():
             outer_atomic(name='abc')(do_nothing)()
 
-        with enable_outer_atomic('abc'):
+        with enable_named_outer_atomic('abc'):
 
             outer_atomic(name='abc')(do_nothing)()  # Not nested.
 
@@ -159,7 +159,7 @@ class TransactionManagersTestCase(TransactionTestCase):
                 with atomic():
                     outer_atomic(name='abc')(do_nothing)()
 
-        with enable_outer_atomic(['abc', 'def']):
+        with enable_named_outer_atomic('abc', 'def'):
 
             outer_atomic(name='def')(do_nothing)()  # Not nested.
 
@@ -173,6 +173,14 @@ class TransactionManagersTestCase(TransactionTestCase):
             with self.assertRaisesRegexp(TransactionManagementError, 'Cannot be inside an atomic block.'):
                 with outer_atomic():
                     outer_atomic(name='def')(do_nothing)()
+
+            with self.assertRaisesRegexp(TransactionManagementError, 'Cannot be inside an atomic block.'):
+                with atomic():
+                    outer_atomic(name='abc')(do_nothing)()
+
+            with self.assertRaisesRegexp(TransactionManagementError, 'Cannot be inside an atomic block.'):
+                with outer_atomic():
+                    outer_atomic(name='abc')(do_nothing)()
 
 
 @ddt.ddt

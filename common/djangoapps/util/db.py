@@ -147,7 +147,7 @@ def commit_on_success(using=None, read_committed=False):
 
 
 @contextmanager
-def enable_outer_atomic(names):
+def enable_named_outer_atomic(*names):
     """
     Enable outer_atomics with names.
 
@@ -155,10 +155,10 @@ def enable_outer_atomic(names):
     See docstring of outer_atomic for details.
 
     Arguments:
-        names (a string or list of strings): Names of outer_atomics.
+        names (variable-lenght argument list): Names of outer_atomics.
     """
-    if isinstance(names, basestring):
-        names = (names,)
+    if len(names) == 0:
+        raise ValueError("At least one name must be specified.")
 
     cache = request_cache.get_cache(OUTER_ATOMIC_CACHE_NAME)
 
@@ -191,7 +191,7 @@ class OuterAtomic(transaction.Atomic):
 
         # By default it is enabled.
         enable = True
-        # If name is set it is only enabled if requested by calling enable_outer_atomic().
+        # If name is set it is only enabled if requested by calling enable_named_outer_atomic().
         if self.name:
             enable = cache.get(self.name, False)
 
@@ -240,10 +240,10 @@ def outer_atomic(using=None, savepoint=True, read_committed=False, name=None):
     If we need to do this to prevent IntegrityErrors, a named outer_atomic
     should be used. You can create a named outer_atomic by passing a name.
     A named outer_atomic only checks that it is not nested under an atomic
-    only if it is nested under enable_outer_atomic(name=<name>). This way
+    only if it is nested under enable_named_outer_atomic(name=<name>). This way
     only the view which is causing IntegrityErrors needs to have its
     automatic transaction management disabled and other callers are not
-    effected.
+    affected.
 
     Additionally, some views need to use READ COMMITTED isolation level.
     For this add @transaction.non_atomic_requests and
