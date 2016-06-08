@@ -6,10 +6,12 @@
         'video/00_sjson.js',
         'video/00_async_process.js',
         'draggabilly',
+        'edx-ui-toolkit/js/utils/string-utils',
+        'edx-ui-toolkit/js/utils/html-utils',
         'modernizr',
         'afontgarde',
         'edxicons'
-    ], function (Sjson, AsyncProcess, Draggabilly) {
+    ], function (Sjson, AsyncProcess, Draggabilly, StringUtils, HtmlUtils) {
 
         /**
          * @desc VideoCaption module exports a function.
@@ -110,12 +112,18 @@
                     '</div>'
                 ].join('');
 
-                var template = [
-                    '<div class="subtitles" role="region" id="transcript-' + this.state.id + '">',
-                        '<h3 id="transcript-label-' + this.state.id + '" class="transcript-title sr"></h3>',
-                        '<ol id="transcript-captions" class="subtitles-menu" lang="' + this.state.lang + '"></ol>',
-                    '</div>'
-                ].join('');
+                var template = edx.HtmlUtils.interpolateHtml(
+                        edx.HtmlUtils.HTML([
+                            '<div class="subtitles" role="region" id="transcript-{courseId}">',
+                                '<h3 id="transcript-label-{courseId}" class="transcript-title sr"></h3>',
+                                '<ol id="transcript-captions" class="subtitles-menu" lang="{courseLang}"></ol>',
+                            '</div>'
+                        ].join('')),
+                        {
+                            courseId: this.state.id,
+                            courseLang: this.state.lang
+                        }
+                    ).toString();
 
                 this.loaded = false;
                 this.subtitlesEl = $(template);
@@ -542,15 +550,26 @@
                             }
                         } else {
                             if (state.isTouch) {
-                                self.subtitlesEl.find('.subtitles-menu')
-                                    .text(gettext('Transcript will be displayed when you start playing the video.')) // jshint ignore: line
-                                    .wrapInner('<li></li>');
+                                edx.HtmlUtils.setHtml(
+                                    self.subtitlesEl.find('.subtitles.menu'),
+                                    edx.HtmlUtils.joinHtml(
+                                        edx.HtmlUtils.HTML('<li>'),
+                                        gettext('Transcript will be displayed when you start playing the video.'),
+                                        edx.HtmlUtils.HTML('</li>')
+                                    )
+                                );
                             } else {
                                 self.renderCaption(start, captions);
                             }
                             self.hideCaptions(state.hide_captions, false);
-                            self.state.el.find('.video-wrapper').after(self.subtitlesEl);
-                            self.state.el.find('.secondary-controls').append(self.container);
+                            edx.HtmlUtils.append(
+                                self.state.el.find('.video-wrapper').parent(),
+                                edx.HtmlUtils.HTML(self.subtitlesEl)
+                            );
+                            edx.HtmlUtils.append(
+                                self.state.el.find('.secondary-controls'),
+                                edx.HtmlUtils.HTML(self.container)
+                            );
                             self.bindHandlers();
                         }
 
@@ -630,9 +649,11 @@
             onResize: function () {
                 this.subtitlesEl
                     .find('.spacing').first()
-                    .height(this.topSpacingHeight()).end()
+                        .height(this.topSpacingHeight());
+
+                this.subtitlesEl
                     .find('.spacing').last()
-                    .height(this.bottomSpacingHeight());
+                        .height(this.bottomSpacingHeight());
 
                 this.scrollCaption();
                 this.setSubtitlesHeight();
@@ -650,7 +671,9 @@
                 var self = this,
                     state = this.state,
                     menu = $('<ol class="langs-list menu">'),
-                    currentLang = state.getCurrentLanguage();
+                    currentLang = state.getCurrentLanguage(),
+                    li, liObj,
+                    link, linkObj;
 
                 if (_.keys(languages).length < 2) {
                     // Remove the menu toggle button
@@ -661,19 +684,47 @@
                 this.showLanguageMenu = true;
 
                 $.each(languages, function(code, label) {
-                    var li = $('<li data-lang-code="' + code + '" />'),
-                        link = $('<button class="control control-lang" aria-pressed="false">' + label + '</button>');
+                    li = edx.HtmlUtils.interpolateHtml(
+                        edx.HtmlUtils.HTML(
+                            '<li data-lang-code="{code}" />'
+                        ),
+                        {
+                            code: code
+                        }
+                    ).toString();
+                    
+                    link = edx.HtmlUtils.interpolateHtml(
+                        edx.HtmlUtils.HTML(
+                            '<button class="control control-lang" aria-pressed="false">{label}</button>'
+                        ),
+                        {
+                            label: label
+                        }
+                    ).toString();
+                    
+                    liObj = $.parseHTML(li);
+                    linkObj = $.parseHTML(link);
 
                     if (currentLang === code) {
-                        li.addClass('is-active');
-                        link.attr('aria-pressed', 'true');
+                        $(liObj).addClass('is-active');
+                        $(linkObj).attr('aria-pressed', 'true');
                     }
 
-                    li.append(link);
-                    menu.append(li);
+                    edx.HtmlUtils.append(
+                        $(liObj),
+                        edx.HtmlUtils.HTML(linkObj)
+                    );
+                    
+                    edx.HtmlUtils.append(
+                        menu,
+                        edx.HtmlUtils.HTML(liObj)
+                    );
                 });
-
-                this.languageChooserEl.append(menu);
+                
+                edx.HtmlUtils.append(
+                    this.languageChooserEl,
+                    edx.HtmlUtils.HTML(menu)
+                );
 
                 menu.on('click', '.control-lang', function (e) {
                     var el = $(e.currentTarget).parent(),
@@ -721,13 +772,21 @@
                             'data-index': index,
                             'data-start': start[index],
                             'tabindex': 0
-                        }).text(text);
+                        });
+                        
+                        edx.HtmlUtils.setHtml(
+                            liEl, 
+                            edx.HtmlUtils.HTML(text)
+                        );
 
                         return liEl[0];
                     };
 
                 return AsyncProcess.array(captions, process).done(function (list) {
-                    container.append(list);
+                    edx.HtmlUtils.append(
+                        container,
+                        edx.HtmlUtils.HTML(list)
+                    );
                 });
             },
 
@@ -796,17 +855,44 @@
             *     out of the tabbing order.
             *
             */
-            addPaddings: function () {
+            addPaddings: function() {
+                var topSpacer = edx.HtmlUtils.interpolateHtml(
+                        edx.HtmlUtils.HTML([
+                            '<li class="spacing" style="height: {height}px">',
+                                '<a href="#transcript-end-{id}" id="transcript-start-{id}" class="transcript-start"></a>',
+                            '</li>'
+                        ].join('')),
+                        {
+                            id: this.state.id,
+                            height: this.topSpacingHeight()
+                        }
+                    ).toString();
 
-                this.subtitlesMenuEl
-                    .prepend(
-                        $('<li class="spacing"><a href="#transcript-end-' + this.state.id + '" id="transcript-start-' + this.state.id + '" class="transcript-start"></a>') // jshint ignore: line
-                            .height(this.topSpacingHeight())
+                var bottomSpacer = edx.HtmlUtils.interpolateHtml(
+                        edx.HtmlUtils.HTML([
+                            '<li class="spacing" style="height: {height}px">',
+                                '<a href="#transcript-start-{id}" id="transcript-end-{id}" class="transcript-end"></a>',
+                            '</li>'
+                        ].join('')),
+                        {
+                            id: this.state.id,
+                            height: this.bottomSpacingHeight()
+                        }
+                    ).toString();
+
+                edx.HtmlUtils.prepend(
+                    this.subtitlesMenuEl,
+                    edx.HtmlUtils.HTML(
+                        topSpacer
                     )
-                    .append(
-                        $('<li class="spacing"><a href="#transcript-start-' + this.state.id + '" id="transcript-end-' + this.state.id + '" class="transcript-end"></a>') // jshint ignore: line
-                            .height(this.bottomSpacingHeight())
-                    );
+                );
+                
+                edx.HtmlUtils.append(
+                    this.subtitlesMenuEl,
+                    edx.HtmlUtils.HTML(
+                        bottomSpacer
+                    )
+                );
             },
 
             /**
