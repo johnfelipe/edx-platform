@@ -774,10 +774,7 @@
                             'tabindex': 0
                         });
                         
-                        edx.HtmlUtils.setHtml(
-                            liEl, 
-                            edx.HtmlUtils.HTML(text)
-                        );
+                        $(liEl).text(text);
 
                         return liEl[0];
                     };
