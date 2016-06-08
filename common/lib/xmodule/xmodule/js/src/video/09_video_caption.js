@@ -6,12 +6,10 @@
         'video/00_sjson.js',
         'video/00_async_process.js',
         'draggabilly',
-        'edx-ui-toolkit/js/utils/string-utils',
-        'edx-ui-toolkit/js/utils/html-utils',
         'modernizr',
         'afontgarde',
         'edxicons'
-    ], function (Sjson, AsyncProcess, Draggabilly, StringUtils, HtmlUtils) {
+    ], function (Sjson, AsyncProcess, Draggabilly) {
 
         /**
          * @desc VideoCaption module exports a function.
@@ -856,7 +854,7 @@
                 var topSpacer = edx.HtmlUtils.interpolateHtml(
                         edx.HtmlUtils.HTML([
                             '<li class="spacing" style="height: {height}px">',
-                                '<a href="#transcript-end-{id}" id="transcript-start-{id}" class="transcript-start"></a>',
+                                '<a href="#transcript-end-{id}" id="transcript-start-{id}" class="transcript-start"></a>', // jshint ignore:line
                             '</li>'
                         ].join('')),
                         {
@@ -868,7 +866,7 @@
                 var bottomSpacer = edx.HtmlUtils.interpolateHtml(
                         edx.HtmlUtils.HTML([
                             '<li class="spacing" style="height: {height}px">',
-                                '<a href="#transcript-start-{id}" id="transcript-end-{id}" class="transcript-end"></a>',
+                                '<a href="#transcript-start-{id}" id="transcript-end-{id}" class="transcript-end"></a>', // jshint ignore:line
                             '</li>'
                         ].join('')),
                         {
