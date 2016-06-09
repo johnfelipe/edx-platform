@@ -44,8 +44,12 @@ from openedx.core.djangoapps.user_api.errors import UserNotFound
 from openedx.core.djangoapps.user_api.models import UserPreference
 =======
 from pytz import common_timezones
+<<<<<<< 96786f18cb95aa96b2055b4a8205983ac3b39be2
 from lms.envs.common import FEATURES
 >>>>>>> Added a feature flag for the time zone field in account settings.
+=======
+from django.conf import settings
+>>>>>>> Added test to see if hidden views are enabled/disabled when changing settings
 
 AUDIT_LOG = logging.getLogger("audit")
 
