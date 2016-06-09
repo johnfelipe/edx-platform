@@ -550,7 +550,7 @@
                         } else {
                             if (state.isTouch) {
                                 HtmlUtils.setHtml(
-                                    self.subtitlesEl.find('.subtitles.menu'),
+                                    self.subtitlesEl.find('.subtitles-menu'),
                                     HtmlUtils.joinHtml(
                                         HtmlUtils.HTML('<li>'),
                                         gettext('Transcript will be displayed when you start playing the video.'),
@@ -689,7 +689,7 @@
                             HtmlUtils.HTML('<button class="control control-lang">'),
                             label,
                             HtmlUtils.HTML('</button>')
-                        ),
+                        );
                     $link = $(linkHtml.toString());
 
                     if (currentLang === code) {
