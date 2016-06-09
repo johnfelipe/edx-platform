@@ -682,7 +682,9 @@
                 this.showLanguageMenu = true;
 
                 $.each(languages, function(code, label) {
-                    $li = $('<li />').data('lang-code', code),
+                    $li = $('<li />', {
+                            'data-lang-code': code
+                        }),
                         linkHtml = HtmlUtils.joinHtml(
                             HtmlUtils.HTML('<button class="control control-lang">'),
                             label,
