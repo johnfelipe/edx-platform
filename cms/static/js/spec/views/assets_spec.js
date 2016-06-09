@@ -184,7 +184,7 @@ define([ "jquery", "common/js/spec_helpers/ajax_helpers", "URI", "js/views/asset
                 });
 
                 it('uploads file properly', function () {
-                    var requests = setup.call(this);
+                    var requests;
                     expect(assetsView).toBeDefined();
                     spyOn(assetsView, "addAsset").and.callFake(function () {
                         assetsView.collection.add(mockAssetUploadResponse.asset);
