@@ -12,6 +12,7 @@ if Backbone?
       can_delete: '.admin-delete'
       can_openclose: '.admin-openclose'
       can_report: '.admin-report'
+      can_vote: '.admin-vote'
 
     urlMappers: {}
 
