@@ -511,6 +511,12 @@ def get_ability(course_id, content, user):
         'can_delete': check_permissions_by_view(user, course_id, content, "delete_thread" if content['type'] == 'thread' else "delete_comment"),
         'can_openclose': check_permissions_by_view(user, course_id, content, "openclose_thread") if content['type'] == 'thread' else False,
         'can_vote': check_permissions_by_view(user, course_id, content, "vote_for_thread" if content['type'] == 'thread' else "vote_for_comment"),
+        'can_report': int(content.get('user_id')) != user.id and check_permissions_by_view(
+            user,
+            course_id,
+            content,
+            "flag_abuse_for_thread" if content['type'] == 'thread' else "flag_abuse_for_comment"
+        )
     }
 
 # TODO: RENAME
