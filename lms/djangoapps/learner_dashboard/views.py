@@ -12,8 +12,8 @@ from openedx.core.djangoapps.credentials.utils import get_programs_credentials
 from openedx.core.djangoapps.programs.models import ProgramsApiConfig
 from openedx.core.djangoapps.programs import utils
 from lms.djangoapps.learner_dashboard.utils import (
-    FAKE_COURSE_ID_FOR_URL,
-    url_remove_fake_course_id
+    FAKE_COURSE_KEY,
+    strip_course_id
 )
 
 
@@ -69,11 +69,9 @@ def program_details(request, program_id):
 
     urls = {
         'program_listing_url': reverse('program_listing_view'),
-        'dashboard_url': reverse('dashboard'),
-        'track_selection_url': url_remove_fake_course_id(
-            reverse('course_modes_choose', kwargs={'course_id': FAKE_COURSE_ID_FOR_URL})),
-        'id_verification_url': url_remove_fake_course_id(
-            reverse('verify_student_start_flow', kwargs={'course_id': FAKE_COURSE_ID_FOR_URL}))
+        'track_selection_url': strip_course_id(
+            reverse('course_modes_choose', kwargs={'course_id': FAKE_COURSE_KEY})),
+        'enrollment_api': reverse('commerce_api:v0:baskets:create')
     }
 
     context = {

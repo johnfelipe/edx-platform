@@ -29,6 +29,7 @@
                     this.enrollModel = new EnrollModel();
                     if(options.context && options.context.urls){
                         this.urlModel = new Backbone.Model(options.context.urls);
+                        this.enrollModel.urlRoot = this.urlModel.get('enrollment_api'); 
                     }
                     this.render();
                     this.listenTo(this.model, 'change', this.render);

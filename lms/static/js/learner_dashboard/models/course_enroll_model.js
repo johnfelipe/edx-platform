@@ -1,5 +1,5 @@
 /**
- *  Track optIn status and submit form
+ *  Store data to enroll learners into the course
  */
 ;(function (define) {
     'use strict';

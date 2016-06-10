@@ -10,7 +10,6 @@ define([
         describe('Course Card View', function () {
             var view = null,
                 courseCardModel,
-                setupView,
                 context = {      
                     course_modes: [],
                     display_name: 'Astrophysics: Exploring Exoplanets',

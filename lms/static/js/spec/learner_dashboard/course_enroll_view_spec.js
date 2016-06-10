@@ -150,25 +150,18 @@ define([
                 expect(courseEnrollModel.save).toHaveBeenCalled();
             });
 
-            it('should update is_enrolled when enrollment success for audit track', function(){
+            it('should redirect to trackSelectionUrl when enrollment success for audit track', function(){
                 singleRunModeList[0].is_enrolled = false;
-                setupView(singleRunModeList);
-                expect(view.$('.enroll-button').length).toBe(1);
-                view.enrollSuccess();
-                expect(courseCardModel.get('is_enrolled')).toBe(true);
-            });
-
-            it('should redirect when enrollment success for verified track', function(){
-                singleRunModeList[0].is_enrolled = false;
-                singleRunModeList[0].mode_slug = 'verified';
+                singleRunModeList[0].mode_slug = 'audit';
                 setupView(singleRunModeList, urls);
-                expect(view.verificationUrl).toBeDefined();
                 expect(view.$('.enroll-button').length).toBe(1);
+                expect(view.trackSelectionUrl).toBeDefined();
                 spyOn(view, 'redirect');
                 view.enrollSuccess();
                 expect(view.redirect).toHaveBeenCalledWith(
-                    view.verificationUrl + courseCardModel.get('course_key') + '/');
+                    view.trackSelectionUrl + courseCardModel.get('course_key'));
             });
+
 
             it('should redirect when enrollment success for no track', function(){
                 singleRunModeList[0].is_enrolled = false;

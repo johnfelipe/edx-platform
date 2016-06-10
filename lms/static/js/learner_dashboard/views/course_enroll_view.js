@@ -31,8 +31,6 @@
                     this.render();
                     if(this.urlModel){
                         this.trackSelectionUrl = this.urlModel.get('track_selection_url');
-                        this.dashboardUrl = this.urlModel.get('dashboard_url');
-                        this.verificationUrl = this.urlModel.get('id_verification_url');
                     }
                 },
 
@@ -49,13 +47,12 @@
                         filledTemplate = this.tpl(this.model.toJSON());
                         HtmlUtils.setHtml(this.$el, filledTemplate);
                         HtmlUtils.setHtml(this.$parentEl, HtmlUtils.HTML(this.$el));
-                        this.$('.run-select').val(this.model.get('run_key'));
                     }
                 },
 
                 handleEnroll: function(){
                     //Enrollment click event handled here
-                    if(!this.model.get('is_enrolled')){
+                    if (!this.model.get('is_enrolled')){
                         // actually enroll
                         this.enrollModel.save({
                             course_id: this.model.get('course_key')
@@ -68,33 +65,25 @@
 
                 handleRunSelect: function(event){
                     var runKey;
-                    if(event.target){
+                    if (event.target){
                         runKey = $(event.target).val();
-                        if(runKey){
+                        if (runKey){
                             this.model.updateRun(runKey);
                         }
                     }
                 },
 
                 enrollSuccess: function(){
-                    var track = this.model.get('mode_slug'),
-                        courseKey = this.model.get('course_key');
-                    if (track) {
-                        if ( track !== 'honor' &&
-                            track !== 'audit' &&
-                            this.verificationUrl ) {
-                            
-                            // Go to the start of the verification flow
-                            this.redirect( this.verificationUrl + courseKey + '/' );
-                        }
-                    } else if (this.trackSelectionUrl) {
+                    var courseKey = this.model.get('course_key');
+                    if (this.trackSelectionUrl) {
                         // Go to track selection page
                         this.redirect( this.trackSelectionUrl + courseKey );
                     }
-
-                    this.model.set({
-                        is_enrolled: true
-                    });
+                    else{
+                        this.model.set({
+                            is_enrolled: true
+                        });
+                    }
                 },
 
                 enrollError: function(model, response) {

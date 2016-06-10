@@ -8,7 +8,6 @@ define([
         
         describe('Program Details Header View', function () {
             var view = null,
-                programModel,
                 context = {
                     urls: {
                         program_listing_url: '/dashboard/programs'

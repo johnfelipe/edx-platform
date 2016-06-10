@@ -1,19 +1,16 @@
-""" The utility methods and functions to help the djangoapp logic
 """
-from urlparse import urlparse
+The utility methods and functions to help the djangoapp logic
+"""
+from opaque_keys.edx.keys import CourseKey
 
 
-FAKE_COURSE_ID_FOR_URL = 'course/replace+1'
+FAKE_COURSE_KEY = CourseKey.from_string('course-v1:fake+course+run')
 
 
-def url_remove_fake_course_id(url_string):
-    """ The utility function to help remove the fake
-    course ID from the url string
+def strip_course_id(path):
     """
-    parsed_url = urlparse(url_string)
-    url_path = parsed_url.path
-    if url_path[-1] == '/':
-        url_path = url_path[:-1]
-    updated_path = url_path.replace(FAKE_COURSE_ID_FOR_URL, '')
-    parsed_url = parsed_url._replace(path=updated_path)
-    return parsed_url.geturl()     # pylint: disable=no-member
+    The utility function to help remove the fake
+    course ID from the url path
+    """
+    course_id = unicode(FAKE_COURSE_KEY)
+    return path.split(course_id)[0]

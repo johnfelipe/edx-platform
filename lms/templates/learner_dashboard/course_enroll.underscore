@@ -8,9 +8,14 @@
     <% if (run_modes.length > 1){ %>
         <div class="run-select-container">
             <label class="sr-only" for="select-<%- course_key %>-run">Select Course Run</label>
-            <select id="select-<%- course_key %>-run" class="run-select">
+            <select id="select-<%- course_key %>-run" class="run-select" autocomplete="off">
                 <% _.each (run_modes, function(runMode){ %>
-                    <option value="<%- runMode.run_key %>">
+                    <option
+                        value="<%- runMode.run_key %>"
+                        <% if(run_key === runMode.run_key){ %>
+                            selected="selected"
+                            <% }%>
+                    >
                         <%= interpolate(
                             gettext('Starts %(start)s'),
                             { start: runMode.start_date },
