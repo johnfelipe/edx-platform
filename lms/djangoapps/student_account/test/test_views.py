@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Tests for student account views. """
 
-import json
 from nose.plugins.attrib import attr
 import re
 from unittest import skipUnless
@@ -31,7 +30,6 @@ from util.testing import UrlResetMixin
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 from openedx.core.djangoapps.theming.test_util import with_edx_domain_context
 
-from django.conf import settings
 from copy import copy
 
 
