@@ -682,14 +682,12 @@
                 this.showLanguageMenu = true;
 
                 $.each(languages, function(code, label) {
-                    $li = $('<li />', {
-                            'data-lang-code': code
-                        }),
-                        linkHtml = HtmlUtils.joinHtml(
-                            HtmlUtils.HTML('<button class="control control-lang">'),
-                            label,
-                            HtmlUtils.HTML('</button>')
-                        );
+                    $li = $('<li />', { 'data-lang-code': code });
+                    linkHtml = HtmlUtils.joinHtml(
+                        HtmlUtils.HTML('<button class="control control-lang">'),
+                        label,
+                        HtmlUtils.HTML('</button>')
+                    );
                     $link = $(linkHtml.toString());
 
                     if (currentLang === code) {
