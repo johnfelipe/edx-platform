@@ -13,9 +13,8 @@
                 </a>
             </h3>
             <div class="course-text">
-                <% if (is_enrolled){ %>
-                    <span class="run-period"><%- start_date %> - <%- end_date %></span>
-                <% } %>
+                <span class="run-period"><%- start_date %> - <%- end_date %></span>
+                -
                 <span class="course-key"><%- key %></span>
             </div>
         </div>

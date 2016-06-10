@@ -20,6 +20,9 @@
     }
     .course-text{
       color: palette(grayscale, dark);
+      .run-period{
+        color: palette(grayscale, black);
+      }
     }
   }
   .course-actions{

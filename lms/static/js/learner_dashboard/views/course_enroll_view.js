@@ -78,8 +78,7 @@
                     if (this.trackSelectionUrl) {
                         // Go to track selection page
                         this.redirect( this.trackSelectionUrl + courseKey );
-                    }
-                    else{
+                    }else{
                         this.model.set({
                             is_enrolled: true
                         });

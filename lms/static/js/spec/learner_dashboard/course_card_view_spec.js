@@ -42,7 +42,7 @@ define([
                 });
             },
 
-            validateEnrolledCard = function(){
+            validateCourseInfoDisplay = function(){
                 //DRY validation for course card in enrolled state
                 expect(view.$('.header-img').attr('src')).toEqual(context.run_modes[0].course_image_url);
                 expect(view.$('.course-details .course-title-link').text().trim()).toEqual(context.display_name);
@@ -68,23 +68,18 @@ define([
             it('should render the course card based on the data enrolled', function() {
                 view.remove();
                 setupView(true);
-                validateEnrolledCard();
+                validateCourseInfoDisplay();
             });
 
             it('should render the course card based on the data not enrolled', function() {
-                expect(view.$('.header-img').attr('src')).toEqual(context.run_modes[0].course_image_url);
-                expect(view.$('.course-details .course-title-link').text().trim()).toEqual(context.display_name);
-                expect(view.$('.course-details .course-title-link').attr('href')).toEqual(
-                    context.run_modes[0].course_url);
-                expect(view.$('.course-details .course-text .course-key').html()).toEqual(context.key);
-                expect(view.$('.course-details .course-text .run-period').html()).not.toBeDefined();
+                validateCourseInfoDisplay();
             });
 
             it('should update render if the course card is_enrolled updated', function(){
                 courseCardModel.set({
                     is_enrolled: true
                 });
-                validateEnrolledCard();
+                validateCourseInfoDisplay();
             });
         });
     }
