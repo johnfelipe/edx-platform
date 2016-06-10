@@ -29,8 +29,9 @@ MAINTENANCE_VIEWS = {
         'name': _('Force Publish Course'),
         'slug': 'force_publish_course',
         'description': _(
-            'Sometimes the draft and published branches of a course can get out of sync. This command resets the '
-            'published branch of a course to point to the draft branch, effectively force publishing the course.'
+            'Sometimes the draft and published branches of a course can get out of sync. Force publish course command '
+            'resets the published branch of a course to point to the draft branch, effectively force publishing the '
+            'course. This view dry runs the force publish command'
         ),
     },
 }
@@ -152,12 +153,10 @@ class ForcePublishCourseView(MaintenanceBaseView):
                                  It is obtained from checkbox so it has either values 'on' or ''.
         """
         course_id = request.POST.get('course-id')
-        is_dry_run = bool(request.POST.get('dry-run'))
 
         self.context.update({
             'form_data': {
-                'course_id': course_id,
-                'is_dry_run': is_dry_run
+                'course_id': course_id
             }
         })
 
@@ -202,28 +201,8 @@ class ForcePublishCourseView(MaintenanceBaseView):
             return self.render_response()
 
         self.context['current_versions'] = current_versions
-
-        if is_dry_run:
-            log.info(
-                '%s dry ran force publish the course %s.',
-                request.user,
-                course_id,
-                exc_info=True
-            )
-            return self.render_response()
-
-        updated_versions = source_store.force_publish_course(
-            course_usage_key, request.user, commit=True
-        )
-
-        self.context['updated_versions'] = self.get_course_branch_versions(updated_versions)
-        msg = 'Published branch version changed from {published_prev} to {published_new}.'.format(
-            published_prev=current_versions['published-branch'],
-            published_new=updated_versions['published-branch']
-        )
         log.info(
-            '%s %s published course %s forcefully.',
-            msg,
+            '%s dry ran force publish the course %s.',
             request.user,
             course_id,
             exc_info=True

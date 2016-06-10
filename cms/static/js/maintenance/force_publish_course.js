@@ -25,7 +25,7 @@ function($, _, gettext, ViewUtils, StringUtils, HtmlUtils, ForcePublishedTemplat
             var errorHtml = '<div class="error" aria-live="polite" id="course-id-error">' + error + '</div>';
             HtmlUtils.setHtml(
                 $(errorWrapperElSelector),
-                errorHtml
+                HtmlUtils.HTML(errorHtml)
             );
             $(errorWrapperElSelector).css('display', 'inline-block');
             $(errorWrapperElSelector).fadeOut(5000);
@@ -61,7 +61,6 @@ function($, _, gettext, ViewUtils, StringUtils, HtmlUtils, ForcePublishedTemplat
                     }
                     else{
                         var attrs = $.extend({}, response, {StringUtils: StringUtils});
-                        //$('#result-container').html(_.template(ForcePublishedTemplate)(attrs));
                         HtmlUtils.setHtml(
                             $('#result-container'),
                             HtmlUtils.template(ForcePublishedTemplate)(attrs)
