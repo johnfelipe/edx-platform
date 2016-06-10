@@ -510,13 +510,13 @@ def get_ability(course_id, content, user):
         'can_reply': check_permissions_by_view(user, course_id, content, "create_comment" if content['type'] == 'thread' else "create_sub_comment"),
         'can_delete': check_permissions_by_view(user, course_id, content, "delete_thread" if content['type'] == 'thread' else "delete_comment"),
         'can_openclose': check_permissions_by_view(user, course_id, content, "openclose_thread") if content['type'] == 'thread' else False,
-        'can_vote': int(content.get('user_id')) != user.id and check_permissions_by_view(
+        'can_vote': not is_content_authored_by(content, user) and check_permissions_by_view(
             user,
             course_id,
             content,
             "vote_for_thread" if content['type'] == 'thread' else "vote_for_comment"
         ),
-        'can_report': int(content.get('user_id')) != user.id and check_permissions_by_view(
+        'can_report': not is_content_authored_by(content, user) and check_permissions_by_view(
             user,
             course_id,
             content,
@@ -809,3 +809,9 @@ def is_discussion_enabled(course_id):
         if get_current_ccx(course_id):
             return False
     return settings.FEATURES.get('ENABLE_DISCUSSION_SERVICE')
+
+def is_content_authored_by(content, user):
+    """
+    Return True if the author is this content is the passed user, else False
+    """
+    return int(content.get('user_id')) == user.id
