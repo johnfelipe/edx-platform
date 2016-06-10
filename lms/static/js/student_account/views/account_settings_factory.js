@@ -107,7 +107,7 @@
                                 required: true,
                                 title: gettext('Time Zone'),
                                 valueAttribute: 'time_zone',
-                                hidden: !fieldsData.time_zone.enabled,
+                                enabled: fieldsData.time_zone.enabled,
                                 helpMessage: gettext(
                                     'Select the time zone for displaying course dates. If you do not specify a ' +
                                     'time zone here, course dates, including assignment deadlines, are displayed in ' +

@@ -66,7 +66,7 @@
 
                 _.each(view.$('.account-settings-section-body'), function (sectionEl, index) {
                     _.each(view.options.tabSections[view.activeTab][index].fields, function (field) {
-                        if (!field.view.hidden) {
+                        if (field.view.enabled) {
                             $(sectionEl).append(field.view.render().el);
                         }
                     });

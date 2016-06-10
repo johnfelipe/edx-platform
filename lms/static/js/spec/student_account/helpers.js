@@ -103,7 +103,7 @@ define(['underscore'], function(_) {
             } else {
                 var visible_count = 0;
                 _.each(sectionsData[sectionIndex].fields, function(field) {
-                    if (!field.view.hidden) {
+                    if (field.view.enabled) {
                         visible_count++;
                     }
                 });
