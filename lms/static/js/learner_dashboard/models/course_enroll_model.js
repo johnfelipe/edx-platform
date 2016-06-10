@@ -12,8 +12,7 @@
                 defaults: {
                     course_id: '',
                     optIn: false,
-                },
-                urlRoot: '/api/commerce/v0/baskets/'
+                }
             });
         }
     );

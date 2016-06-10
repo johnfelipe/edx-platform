@@ -71,7 +71,7 @@ def program_details(request, program_id):
         'program_listing_url': reverse('program_listing_view'),
         'track_selection_url': strip_course_id(
             reverse('course_modes_choose', kwargs={'course_id': FAKE_COURSE_KEY})),
-        'enrollment_api': reverse('commerce_api:v0:baskets:create')
+        'commerce_api_url': reverse('commerce_api:v0:baskets:create')
     }
 
     context = {

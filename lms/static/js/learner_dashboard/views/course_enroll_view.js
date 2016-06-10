@@ -34,10 +34,6 @@
                     }
                 },
 
-                updateIsEnrolled: function(){
-                    
-                },
-
                 render: function() {
                     var filledTemplate;
                     if (this.$parentEl &&
