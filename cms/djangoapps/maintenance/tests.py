@@ -6,9 +6,6 @@ import json
 
 from django.core.urlresolvers import reverse
 
-from opaque_keys.edx.keys import CourseKey
-
-
 from xmodule.modulestore import ModuleStoreEnum
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
@@ -68,14 +65,6 @@ class MaintenanceViewTestCase(ModuleStoreTestCase):
         """
         response = self.client.post(self.view_url, data=data, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertContains(response, error_message, status_code=200)
-
-    def validate_success_from_response(self, response, success_message):
-        """
-        Validate response contains success.
-        """
-        # self.assertNotContains(response, '<div class="error">', status_code=200)
-        # self.assertContains(response, success_message, status_code=200)
-
 
     def tearDown(self):
         """
@@ -195,8 +184,8 @@ class TestForcePublish(MaintenanceViewTestCase):
         course = self.setup_test_course()
 
         # publish the course
-        source_store = modulestore()._get_modulestore_for_courselike(course.id)
-        source_store.force_publish_course(course.id, self.user.id, commit=True)
+        source_store = modulestore()._get_modulestore_for_courselike(course.id)  # pylint: disable=protected-access
+        source_store.force_publish_course(course.id, self.user.id, commit=True)  # pylint: disable=no-member
 
         # now course is published, we should get `already published course` error.
         self.verify_error_message(
@@ -245,7 +234,7 @@ class TestForcePublish(MaintenanceViewTestCase):
         course = self.setup_test_course()
         response = self.get_force_publish_course_response(course)
 
-        self.assertTrue('current_versions' in response)
+        self.assertIn('current_versions', response)
 
         # verify that course still has changes as we just dry ran force publish course.
         self.assertTrue(self.store.has_changes(self.store.get_item(course.location)))

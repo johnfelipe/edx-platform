@@ -135,6 +135,9 @@ class ForcePublishCourseView(MaintenanceBaseView):
         })
 
     def get_course_branch_versions(self, versions):
+        """
+        Returns a dict containing unicoded values of draft and published draft versions.
+        """
         return {
             'draft-branch': unicode(versions['draft-branch']),
             'published-branch': unicode(versions['published-branch'])
