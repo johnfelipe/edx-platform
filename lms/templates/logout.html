@@ -1,10 +1,10 @@
 {% extends "main_django.html" %}
 {% load i18n staticfiles %}
 
-{% block title %}{% trans "Logged Out" %} | {{ block.super }}{% endblock %}
+{% block title %}{% trans "Signed Out" %} | {{ block.super }}{% endblock %}
 
 {% block body %}
-    <h1>{% trans "You have been logged out." %}</h1>
+    <h1>{% trans "You have signed out." %}</h1>
 
     <p style="text-align: center; margin-bottom: 20px;">
         {% blocktrans %}
