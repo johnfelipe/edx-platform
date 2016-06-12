@@ -1,46 +1,55 @@
 """
 Utilities for working with ConfigurationModels.
 """
-import json
-import sys
-
-from django.utils import timezone
-from django.core.serializers.base import DeserializationError
-from django.core.serializers.python import (
-    Deserializer as PythonDeserializer
-)
-from django.utils import six
+from django.apps import apps
+from rest_framework.parsers import JSONParser
+from rest_framework.serializers import ModelSerializer
+from django.contrib.auth.models import User
 
 
-# Unfortunately this is copied from https://github.com/django/django/blob/7f51876f99851fdc3fef63aecdfbcffa199c26b9/django/core/serializers/json.py#L70
-# to be able a little manipulation of the JSON format....
-def configuration_model_deserializer(stream_or_string, **options):
+def get_serializer_class(configuration_model):
+    """ Returns a ConfigurationModel serializer class for the supplied configuration_model. """
+    class AutoConfigModelSerializer(ModelSerializer):
+        """Serializer class for configuration models."""
+
+        class Meta(object):
+            """Meta information for AutoConfigModelSerializer."""
+            model = configuration_model
+
+        def create(self, validated_data):
+            if "changed_by_id" in self.context:
+                validated_data['changed_by'], _ = User.objects.get_or_create(id=self.context["changed_by_id"])
+            return super(AutoConfigModelSerializer, self).create(validated_data)
+
+    return AutoConfigModelSerializer
+
+
+def deserialize_json(stream, user_id):
     """
-    Deserialize a stream or string of JSON data representing a ConfigurationModel.
+    Given a stream containing JSON, deserializers the JSON into ConfigurationModel instances.
+
+    The stream is expected to be in the following format:
+        { "model": "config_models.exampleconfigurationmodel",
+          "data": [
+                    { "enabled": True,
+                      "color": "black"
+                      ...
+                    },
+                    { "enabled": False,
+                      "color": "yellow"
+                      ...
+                    },
+                    ...
+                  ]
+        }
+
+    If the provided stream does not contain valid JSON for the ConfigurationModel specified,
+    an Exception will be raised.
     """
-    if not isinstance(stream_or_string, (bytes, six.string_types)):
-        stream_or_string = stream_or_string.read()
-    if isinstance(stream_or_string, bytes):
-        stream_or_string = stream_or_string.decode('utf-8')
-    try:
-        objects = json.loads(stream_or_string)
-        change_date = unicode(timezone.now())
-        objects = convert_to_expected_format(objects, change_date)  # This is what was inserted!
-        for obj in PythonDeserializer(objects, **options):
-            yield obj
-    except GeneratorExit:
-        raise
-    except Exception as e:
-        # Map to deserializer error
-        six.reraise(DeserializationError, DeserializationError(e), sys.exc_info()[2])
-
-
-def convert_to_expected_format(objects, change_date):
-    return_list = []
-    model_name = objects["model"]
-    data = objects["data"]
-    for fields in data:
-        fields[u"change_date"] = change_date
-        return_list.append({u"model": model_name, u"fields": fields})
-
-    return return_list
+    parsed_json = JSONParser().parse(stream)
+    serializer_class = get_serializer_class(apps.get_model(parsed_json["model"]))
+    serializer = serializer_class(data=parsed_json["data"], context={'changed_by_id': user_id}, many=True)
+    if serializer.is_valid():
+        serializer.save()
+    else:
+        raise Exception(serializer.error_messages)
